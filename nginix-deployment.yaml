@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginix
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  serviceName: nginix
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginix
+    spec:
+      containers:
+      - name: nginix
+        image: docker.registry/nginx-app:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginix-volume-storage
+          mountPath: /usr/share/nginx/html
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+          requests:
+            cpu: "256m"
+            memory: "128Mi"
+  volumeClaimTemplates:
+  - metadata:
+      name: nginix-volume-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
